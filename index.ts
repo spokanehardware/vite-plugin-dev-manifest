@@ -10,8 +10,9 @@ export interface ManifestPluginConfig {
 
 export interface PluginManifest {
     url: string;
+	[key: string]: string | { [key: string]: string };
     inputs: {
-        [key: string]: string;
+        [key: string]: any;
     }
 }
 
@@ -67,13 +68,15 @@ const plugin = ({ omitInputs = [], manifestName = MANIFEST_NAME }: ManifestPlugi
 				for (const name of inputOptions) {
 					if (omitInputs.includes(name)) continue;
 
-					manifest.inputs[name] = simplifyPath(name);
+					manifest.inputs[name] = { src: simplifyPath(name) };
 				}
 			} else {
 				for (const [name, path] of Object.entries(inputOptions)) {
 					if (omitInputs.includes(name)) continue;
 
-					manifest.inputs[name] = simplifyPath(path);
+					const srcKey = simplifyPath(path).replace('src/', '');
+					manifest[srcKey] = { src: simplifyPath(srcKey) }
+
 				}
 			}
 
